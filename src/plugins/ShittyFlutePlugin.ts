@@ -32,7 +32,7 @@ export default class ShittyFlutePlugin extends Plugin{
         const manager = new AudioManager();
         setInterval(() => {
           this.client.guilds.cache.forEach(guild => {
-            if(Math.random() > 0.95) return;
+            if(Math.random() < 0.95) return;
             this.flute(guild);
           });
         }, 1000 * 60 * 15);
