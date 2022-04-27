@@ -124,12 +124,16 @@ export default class MenuCommand extends Command {
     const day = command.options.getInteger('day')
     await command.reply(`Menu en cours de chargement...`)
     console.log(day)
-    if(day){
+    if(day!==null){
       const embeds = await this.getWeekMenus();
       await command.editReply({embeds: embeds[day]})
     }else{
       const embeds = await this.getTodayMenu();
-      await command.editReply({ embeds });
+      if(embeds.length > 1) {
+        await command.editReply({ embeds });
+      }else{
+        await command.editReply("Aucun menu n'est disponible pour aujourd'hui")
+      }
     }
   }
 }
