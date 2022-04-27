@@ -1,9 +1,19 @@
 import { BitFieldResolvable, CommandInteraction, IntentsString, PartialTypes } from 'discord.js'
 
+type BaseCommandArgument<T, TYPE = 'STRING'|'BOOLEAN'|'NUMBER'|'INTEGER'> = {
+  type: TYPE
+  name: string,
+  description: string,
+  required: boolean,
+  choices?: [name: string, value: T][],
+}
+type CommandArgument = BaseCommandArgument<string, 'STRING'> | BaseCommandArgument<number, 'NUMBER'> | BaseCommandArgument<number, 'INTEGER'> | Omit<BaseCommandArgument<boolean, 'BOOLEAN'>, 'choices'>
+
 type CommandOption = {
   description:string,
   intents: BitFieldResolvable<IntentsString, number>
   partials: PartialTypes[]
+  arguments: CommandArgument[]
 }
 
 /**
@@ -16,6 +26,7 @@ export default abstract class Command{
       description: "",
       intents: [],
       partials: [],
+      arguments: [],
       ...options
     }
   }
@@ -30,6 +41,10 @@ export default abstract class Command{
 
   get description () {
     return this.options.description
+  }
+
+  get arguments () {
+    return this.options.arguments
   }
 
   /**

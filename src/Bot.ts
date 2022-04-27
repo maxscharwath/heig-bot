@@ -2,7 +2,13 @@ import {
   Client,
   CommandInteraction, Guild,
 } from 'discord.js'
-import {SlashCommandBuilder} from "@discordjs/builders";
+import {
+  SlashCommandBooleanOption,
+  SlashCommandBuilder,
+  SlashCommandIntegerOption,
+  SlashCommandNumberOption,
+  SlashCommandStringOption
+} from '@discordjs/builders'
 import {REST} from "@discordjs/rest";
 import {Routes} from "discord-api-types/v9";
 import Command from './commands/Command'
@@ -86,10 +92,47 @@ export default class Bot {
    * @param guilds - The guild
    */
   public async deployCommands(...guilds:Guild[]): Promise<void> {
-    const commands = [...this.commands.entries()].map(([commandName, command])=>
-      new SlashCommandBuilder()
+    const commands = [...this.commands.entries()].map(([commandName, command])=> {
+      const builder = new SlashCommandBuilder()
         .setName(commandName)
-        .setDescription(command.description).toJSON());
+        .setDescription(command.description);
+      command.arguments.forEach(option => {
+        switch (option.type) {
+          case 'STRING':
+            builder.addStringOption(new SlashCommandStringOption()
+              .setName(option.name)
+              .setRequired(option.required)
+              .setDescription(option.description)
+              .setChoices(option.choices??[])
+            )
+            break;
+          case 'INTEGER':
+            builder.addIntegerOption(new SlashCommandIntegerOption()
+              .setName(option.name)
+              .setRequired(option.required)
+              .setDescription(option.description)
+              .setChoices(option.choices??[])
+            )
+            break;
+            case 'NUMBER':
+            builder.addNumberOption(new SlashCommandNumberOption()
+              .setName(option.name)
+              .setRequired(option.required)
+              .setDescription(option.description)
+              .setChoices(option.choices??[])
+            )
+            break;
+          case 'BOOLEAN':
+            builder.addBooleanOption(new SlashCommandBooleanOption()
+              .setName(option.name)
+              .setRequired(option.required)
+              .setDescription(option.description)
+            )
+            break;
+        }
+      })
+      return builder.toJSON();
+    });
     const rest = new REST({ version: '9' }).setToken(this.config.token);
     await Promise.allSettled(guilds.map(guild=>rest.put(Routes.applicationGuildCommands(this.config.clientId, guild.id), { body: commands })));
   }

@@ -15,6 +15,7 @@ const bot = new Bot({
   .addPlugin(new ShittyFlutePlugin())
   .addCommand('rickroll', new RickrollCommand())
   .addCommand('menu', new MenuCommand({
+    menuApiKey:process.env.MENU_API_KEY!,
     openai: {
       organization: process.env.OPENAI_ORGANIZATION!,
       apiKey: process.env.OPENAI_API_KEY!,
