@@ -102,7 +102,9 @@ export default class MenuCommand extends Command {
 
   private async getTodayMenu(): Promise<MessageEmbed[]> {
     const response = await axios.get<MenuResponse>('https://apix.blacktree.io/top-chef/today');
-    return this.menuEmbed(response.data);
+    const menu = response.data;
+    if(!menu) return [];
+    return this.menuEmbed(menu);
   }
 
   private async getWeekMenus(): Promise<MessageEmbed[][]> {
@@ -112,6 +114,7 @@ export default class MenuCommand extends Command {
       }
     });
     const menus = response.data;
+    if(!menus)return [];
     const embeds: MessageEmbed[][] = [];
     for (const day of menus.days) {
       embeds.push(await this.menuEmbed(day));
@@ -126,7 +129,12 @@ export default class MenuCommand extends Command {
     console.log(day)
     if(day!==null){
       const embeds = await this.getWeekMenus();
-      await command.editReply({embeds: embeds[day]})
+      console.log(embeds)
+      if(embeds[day]){
+        await command.editReply({embeds: embeds[day]})
+      }else{
+        await command.editReply("Aucun menu n'est disponible pour ce jour")
+      }
     }else{
       const embeds = await this.getTodayMenu();
       if(embeds.length > 1) {

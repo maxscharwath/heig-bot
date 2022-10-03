@@ -4,6 +4,7 @@ import MenuCommand from './commands/MenuCommand'
 import RickrollCommand from './commands/RickrollCommand'
 import GutenMorgenPlugin from './plugins/GutenMorgenPlugin'
 import ShittyFlutePlugin from './plugins/ShittyFlutePlugin'
+import RentschCommand from './commands/RentschCommand'
 dotenv.config()
 
 
@@ -21,6 +22,7 @@ const bot = new Bot({
       apiKey: process.env.OPENAI_API_KEY!,
     },
     useOpenAi: false
-  }));
+  }))
+  .addCommand('rrh', new RentschCommand());
 
 bot.start();
